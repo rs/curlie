@@ -5,6 +5,9 @@ builds:
   - CGO_ENABLED=0
   goos:
   - darwin
+  - linux
+  - freebsd
+  - windows
   binary: http
 git:
   short_hash: true
@@ -17,6 +20,8 @@ brew:
     email: rs@rhapsodyk.net
   homepage: https://github.com/rs/curl-httpie
   description: HTTPie for curl
+  conflicts:
+  - httpie
 
 release:
   name_template: "{{.ProjectName}}-v{{.Version}}"
