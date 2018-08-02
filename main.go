@@ -25,13 +25,14 @@ func main() {
 	verbose := opts.Has("verbose") || opts.Has("v")
 	quiet := opts.Has("silent") || opts.Has("s")
 	pretty := opts.Remove("pretty")
+	opts.Remove("i")
 
 	if len(opts) == 0 {
 		// Show help if no args
 		opts = append(opts, "-h")
 	} else {
 		// Remove progress bar.
-		opts = append(opts, "-sS")
+		opts = append(opts, "-s", "-S")
 	}
 
 	// Change default method based on binary name.

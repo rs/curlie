@@ -60,18 +60,26 @@ func Parse(argv []string) (opts Opts) {
 			more = false
 			continue
 		}
-		opts = append(opts, arg)
 		if arg[1] == '-' {
+			opts = append(opts, arg)
 			if longHasValue(arg[2:]) && i+1 < len(argv) {
 				opts = append(opts, argv[i+1])
 				i++
 			}
 			continue
 		}
+		// Parse componed short args
 		for j := 1; j < len(arg); j++ {
+			opts = append(opts, string([]byte{'-', arg[j]}))
 			if strings.IndexByte(curlShortValues, arg[j]) != -1 {
-				if j == len(arg)-1 && i+1 < len(argv) {
-					opts = append(opts, argv[i+1])
+				// Short arg as value, it must be last in compound.
+				// The value is either the remaining or the next arg.
+				if j == len(arg)-1 {
+					if i+1 < len(argv) {
+						opts = append(opts, argv[i+1])
+					}
+				} else {
+					opts = append(opts, arg[j+1:])
 				}
 				break
 			}

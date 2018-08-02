@@ -1,7 +1,6 @@
 package formatter
 
 import (
-	"bytes"
 	"io"
 	"regexp"
 )
@@ -14,6 +13,7 @@ type ColorScheme struct {
 	Field   string
 	Value   string
 	Literal string
+	Error   string
 }
 
 type ColorName int
@@ -26,6 +26,7 @@ const (
 	FieldColor
 	ValueColor
 	LiteralColor
+	ErrorColor
 )
 
 func (cs ColorScheme) Color(name ColorName) string {
@@ -44,6 +45,8 @@ func (cs ColorScheme) Color(name ColorName) string {
 		return cs.Value
 	case LiteralColor:
 		return cs.Literal
+	case ErrorColor:
+		return cs.Error
 	}
 	return ""
 }
@@ -59,6 +62,7 @@ var DefaultColorScheme = ColorScheme{
 	Field:   "\x1b[38;5;33m",
 	Value:   "\x1b[38;5;37m",
 	Literal: "\x1b[38;5;166m",
+	Error:   "\x1b[38;5;1m",
 }
 
 type HeaderColorizer struct {
@@ -92,6 +96,11 @@ type headerFormatter struct {
 
 var headerFormatters = []headerFormatter{
 	{
+		// Curl errors
+		regexp.MustCompile(`^(curl: \(\d+\).*)(\n)$`),
+		[]ColorName{ErrorColor, ResetColor},
+	},
+	{
 		// Method + Status line
 		regexp.MustCompile(`^([A-Z]+)(\s+\S+\s+)(HTTP)(/)([\d\.]+\s*)(\n)$`),
 		[]ColorName{FieldColor, DefaultColor, FieldColor, DefaultColor, ValueColor, ResetColor},
@@ -119,10 +128,6 @@ func (c *HeaderColorizer) formatLine() {
 	}()
 	cs := c.Scheme
 	if cs.IsZero() {
-		c.buf = append(c.buf, c.line...)
-		return
-	}
-	if bytes.HasPrefix(c.line, curlErrPrefix) {
 		c.buf = append(c.buf, c.line...)
 		return
 	}

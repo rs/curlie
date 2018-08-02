@@ -5,8 +5,6 @@ import (
 	"io"
 )
 
-var curlErrPrefix = []byte("curl: (")
-
 // HeaderCleaner removes > and < from curl --verbose output.
 type HeaderCleaner struct {
 	Out io.Writer
@@ -18,100 +16,57 @@ type HeaderCleaner struct {
 	// Post is inserted after the request headers.
 	Post *bytes.Buffer
 
-	inited    bool
-	muted     bool
-	buf       []byte
-	last      byte // last byte scanned
-	skip      int  // skip n chars
-	skipLine  bool // skip all chars until next \n
-	printLine bool // print all chars until next \n
-	body      bool
-
-	// curl error doesn't come in a predictable single write(), we thus
-	// need to match it byte per byte
-	curlErrIdx int
+	buf  []byte
+	line []byte
 }
 
 func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
-	if !c.inited {
-		c.inited = true
-		c.muted = !c.Verbose
-	}
+	n = len(p)
 	cp := c.buf
-	for i := 0; i < len(p); i++ {
-		b := p[i]
-		if c.printLine && b != '\n' {
-			cp = append(cp, b)
-			continue
+	for len(p) > 0 {
+		idx := bytes.IndexByte(p, '\n')
+		if idx == -1 {
+			c.line = append(c.line, p...)
+			break
 		}
-		if c.skipLine && b != '\n' {
-			continue
-		}
-		c.skipLine = false
-		if c.skip > 0 {
-			c.skip--
-			continue
-		}
-		if (c.last == '\n' || c.last == 0 || c.curlErrIdx > 0) && curlErrPrefix[c.curlErrIdx] == b {
-			c.curlErrIdx++
-			if c.curlErrIdx >= len(curlErrPrefix) {
-				c.curlErrIdx = 0
-				c.printLine = true
-				cp = append(cp, curlErrPrefix...)
-			}
-			continue
-		}
-		c.curlErrIdx = 0
+		c.line = append(c.line, p[:idx+1]...)
+		p = p[idx+1:]
+		ignore := false
+		b, i := firstVisibleChar(c.line)
 		switch b {
 		case '>', '<':
-			if c.last == '\n' {
-				c.skip = 1 // space
-				c.last = b
-				continue
+			c.line = c.line[i+2:]
+		case '}', '{':
+			ignore = true
+			if c.Post != nil {
+				cp = append(append(cp, bytes.TrimSpace(c.Post.Bytes())...), '\n', '\n')
+				c.Post = nil
 			}
-		case '\r':
-			if c.last == '>' {
-				c.body = true
-				if c.muted {
-					c.muted = false
-					c.skip = 1
-					c.last = '\n'
-					continue
-				}
-			}
-		default:
-			if c.last == '\n' || c.last == 0 {
-				switch b {
-				case '{', '}':
-					c.skipLine = true
-					c.skip = 1
-					continue
-				case '*':
-					cp = append(cp, "###")
-					if !c.Verbose {
-						c.skipLine = true
-						c.skip = 1
-						continue
-					}
-					if c.Post != nil && c.body {
-						cp = append(append(cp, c.Post.Bytes()...), '\n')
-						c.Post = nil
-					}
-				}
+		case '*':
+			if !c.Verbose {
+				ignore = true
 			}
 		}
-		if !c.muted || c.printLine {
-			cp = append(cp, b)
+		if !ignore {
+			cp = append(cp, c.line...)
 		}
-		c.last = b
-		c.printLine = false
+		c.line = c.line[:0]
 	}
-	if len(cp) > 0 {
-		n, err = c.Out.Write(cp)
-		if err != nil || n != len(cp) {
-			return
-		}
-	}
-	return len(p), nil
+	_, err = c.Out.Write(cp)
+	return
 }
 
+var colorEscape = []byte("\x1b[")
+
+func firstVisibleChar(b []byte) (byte, int) {
+	if bytes.HasPrefix(b, colorEscape) {
+		if idx := bytes.IndexByte(b, 'm'); idx != -1 {
+			if idx < len(b) {
+				return b[idx+1], idx + 1
+			} else {
+				return 0, -1
+			}
+		}
+	}
+	return b[0], 0
+}
