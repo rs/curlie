@@ -5,24 +5,31 @@ import (
 	"io"
 )
 
+var curlErrPrefix = []byte("curl: (")
+
 // HeaderCleaner removes > and < from curl --verbose output.
 type HeaderCleaner struct {
 	Out io.Writer
 
-	// Verbose removes the request headers part the output as well as the lines
+	// Verbose removes the request headers part of the output as well as the lines
 	// starting with * if set to false.
 	Verbose bool
 
 	// Post is inserted after the request headers.
 	Post *bytes.Buffer
 
-	inited   bool
-	muted    bool
-	buf      []byte
-	last     byte
-	skip     int
-	skipLine bool
-	body     bool
+	inited    bool
+	muted     bool
+	buf       []byte
+	last      byte // last byte scanned
+	skip      int  // skip n chars
+	skipLine  bool // skip all chars until next \n
+	printLine bool // print all chars until next \n
+	body      bool
+
+	// curl error doesn't come in a predictable single write(), we thus
+	// need to match it byte per byte
+	curlErrIdx int
 }
 
 func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
@@ -33,6 +40,10 @@ func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
 	cp := c.buf
 	for i := 0; i < len(p); i++ {
 		b := p[i]
+		if c.printLine && b != '\n' {
+			cp = append(cp, b)
+			continue
+		}
 		if c.skipLine && b != '\n' {
 			continue
 		}
@@ -41,6 +52,16 @@ func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
 			c.skip--
 			continue
 		}
+		if (c.last == '\n' || c.last == 0 || c.curlErrIdx > 0) && curlErrPrefix[c.curlErrIdx] == b {
+			c.curlErrIdx++
+			if c.curlErrIdx >= len(curlErrPrefix) {
+				c.curlErrIdx = 0
+				c.printLine = true
+				cp = append(cp, curlErrPrefix...)
+			}
+			continue
+		}
+		c.curlErrIdx = 0
 		switch b {
 		case '>', '<':
 			if c.last == '\n' {
@@ -66,6 +87,7 @@ func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
 					c.skip = 1
 					continue
 				case '*':
+					cp = append(cp, "###")
 					if !c.Verbose {
 						c.skipLine = true
 						c.skip = 1
@@ -78,10 +100,11 @@ func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
 				}
 			}
 		}
-		if !c.muted {
+		if !c.muted || c.printLine {
 			cp = append(cp, b)
 		}
 		c.last = b
+		c.printLine = false
 	}
 	if len(cp) > 0 {
 		n, err = c.Out.Write(cp)
@@ -91,3 +114,4 @@ func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
 	}
 	return len(p), nil
 }
+

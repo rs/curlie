@@ -34,6 +34,16 @@ func (opts Opts) Val(opt string) string {
 	return ""
 }
 
+// Remove removes all occurrences of opt and return true if found.
+func (opts *Opts) Remove(opt string) bool {
+	found := false
+	for idx := opts.index(opt); idx != -1 && idx < len(*opts); idx = opts.index(opt) {
+		*opts = append((*opts)[:idx], (*opts)[idx+1:]...)
+		found = true
+	}
+	return found
+}
+
 // Parse converts an HTTPie like argv into a list of curl options.
 func Parse(argv []string) (opts Opts) {
 	args := []string{}

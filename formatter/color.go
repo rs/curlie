@@ -1,6 +1,7 @@
 package formatter
 
 import (
+	"bytes"
 	"io"
 	"regexp"
 )
@@ -18,7 +19,8 @@ type ColorScheme struct {
 type ColorName int
 
 const (
-	DefaultColor ColorName = iota
+	ResetColor ColorName = iota
+	DefaultColor
 	CommentColor
 	StatusColor
 	FieldColor
@@ -28,6 +30,8 @@ const (
 
 func (cs ColorScheme) Color(name ColorName) string {
 	switch name {
+	case ResetColor:
+		return "\x1b[39m"
 	case DefaultColor:
 		return cs.Default
 	case CommentColor:
@@ -56,8 +60,6 @@ var DefaultColorScheme = ColorScheme{
 	Value:   "\x1b[38;5;37m",
 	Literal: "\x1b[38;5;166m",
 }
-
-var reset = "\x1b[39m"
 
 type HeaderColorizer struct {
 	Out    io.Writer
@@ -90,30 +92,37 @@ type headerFormatter struct {
 
 var headerFormatters = []headerFormatter{
 	{
-		regexp.MustCompile(`^([A-Z]+)(\s+\S+\s+)(HTTP)(/)([\d\.]+\s*\n)$`),
-		[]ColorName{FieldColor, DefaultColor, FieldColor, DefaultColor, ValueColor},
+		// Method + Status line
+		regexp.MustCompile(`^([A-Z]+)(\s+\S+\s+)(HTTP)(/)([\d\.]+\s*)(\n)$`),
+		[]ColorName{FieldColor, DefaultColor, FieldColor, DefaultColor, ValueColor, ResetColor},
 	},
 	{
-		regexp.MustCompile(`^(HTTP)(/)([\d.]+\s+\d{3})(\s+.+\n)$`),
-		[]ColorName{FieldColor, DefaultColor, ValueColor, StatusColor},
+		// Status line
+		regexp.MustCompile(`^(HTTP)(/)([\d.]+\s+\d{3})(\s+.+)(\n)$`),
+		[]ColorName{FieldColor, DefaultColor, ValueColor, StatusColor, ResetColor},
 	},
 	{
-		regexp.MustCompile(`^([a-zA-Z0-9.-]*?:)(.*\n)$`),
-		[]ColorName{DefaultColor, ValueColor},
+		// Header
+		regexp.MustCompile(`^([a-zA-Z0-9.-]*?:)(.*)(\n)$`),
+		[]ColorName{DefaultColor, ValueColor, ResetColor},
 	},
 	{
-		regexp.MustCompile(`^(\* .*[\n\r]*)$`),
-		[]ColorName{CommentColor},
+		// Comments
+		regexp.MustCompile(`^(\* .*)([\n\r]*)$`),
+		[]ColorName{CommentColor, ResetColor},
 	},
 }
 
 func (c *HeaderColorizer) formatLine() {
 	defer func() {
 		c.line = c.line[:0]
-		c.buf = append(c.buf, reset...)
 	}()
 	cs := c.Scheme
 	if cs.IsZero() {
+		c.buf = append(c.buf, c.line...)
+		return
+	}
+	if bytes.HasPrefix(c.line, curlErrPrefix) {
 		c.buf = append(c.buf, c.line...)
 		return
 	}
