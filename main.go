@@ -81,6 +81,7 @@ func main() {
 	if opts.Has("curl") {
 		opts.Remove("curl")
 		fmt.Printf("curl %s\n", strings.Join(opts, " "))
+		return
 	}
 	cmd := exec.Command("curl", opts...)
 	cmd.Stdin = stdin
