@@ -1,14 +1,16 @@
 project_name: curl-httpie
 builds:
--
-  env:
-  - CGO_ENABLED=0
-  goos:
-  - darwin
-  - linux
-  - freebsd
-  - windows
-  binary: http
+  -
+    binary: http
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - freebsd
+      - windows
+release:
+  name_template: "{{.ProjectName}}-v{{.Version}}"
 git:
   short_hash: true
 brew:
@@ -19,9 +21,18 @@ brew:
     name: Olivier Poitrey
     email: rs@rhapsodyk.net
   homepage: https://github.com/rs/curl-httpie
-  description: HTTPie for curl
+  description: HTTPie for curl — The power of curl, the ease of use of httpie.
   conflicts:
-  - httpie
-
-release:
-  name_template: "{{.ProjectName}}-v{{.Version}}"
+    - httpie
+nfpm:
+  maintainer: Olivier Poitrey <rs@rhapsodyk.net>
+  description: curl-httpie is a wrapper on top of curl that offers the ease of use of httpie without having to compromise curl features and performance.
+  license: MIT
+  formats:
+    - deb
+    - rpm
+  dependencies:
+    - curl
+  conflicts:
+    - httpie
+  bindir: /usr/bin
