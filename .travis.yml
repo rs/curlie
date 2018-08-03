@@ -1,19 +1,23 @@
+sudo: required
+service:
+  - docker
 language: go
-go:
-- '1.9'
-- '1.10'
-- master
+go: '1.10'
 matrix:
   allow_failures:
   - go: master
 script: go test -v -race -cpu=1,2,4 -bench . -benchmem ./...
 deploy:
-- provider: script
-  skip_cleanup: true
-  script: curl -sL http://git.io/goreleaser | bash
+  provider: script
   on:
+    branch: master
     tags: true
     condition: "$TRAVIS_OS_NAME = linux && $TRAVIS_GO_VERSION = '1.10'"
+  skip_cleanup: true
+  script: curl -sL http://git.io/goreleaser | PATH=$PATH:$(pwd)/.deploy bash
 env:
   global:
     secure: 7Hb/SLMTpff9oj9VYaWhl/P6eDqBav17PCIVAjyNxlRSKpRJlNDsYGz3/i1XHy7BiNMKPstOK+VlB3sR4hrGrNew8EVhROXOXl8OFstA0eptdG0TgwBxsjXiXNFRR3ancgrOlbbsfcUx5qXapQEv/kqqhhh1DrR5i/khDeMIUnZ6/Lwtgw4VTbrQD3I599ORXV7VOxu6qQKL9g0w1rJb9UM+zIDJMMULmlYp31toA520dr4tIlKJANYJLlU5hnFJAvq7ywMTbfA5h6nDtahlTP0iF879gmIoXg9MZkynmPZ4fXhdFxn3Y2xLBCUAU+DoGAXvD3ggffUWVOrnZBKXSPVTBpMHbt9Xd/HPitShOeaQQNlaj29Ky4xzD/p2cDCY4oDL8QLtRF2zP7+GfRaUY0ara3D1Q33fyyoVEeiWskCEZSiENZjrxoyevVvjbLCgT7kDJp+szvfVWJp16oHMtLQ/yXt63ZJ0PAJXUp1UJHSrlmy0r7pfEqfRWN47d45b/ld0ARMLOpMpBVGYQK8SeH2hqQ4EAyU9Erf4llFT0c/T5xgO90s+0uPUswqnIj7BuzgILsAFZQsMW3PU3HQx0mmB7m/qHYWbmkudR3C3kkKMP8IPmhZUETcCPzj4Iy93GNU6De1bv+TrjY4OFBPgKEY52ji01940v5bq90UD7jQ=
+after_success:
+- openssl aes-256-cbc -K $encrypted_499561176c58_key -iv $encrypted_499561176c58_iv
+  -in .snapcraft/travis_snapcraft.cfg -out .snapcraft/snapcraft.cfg -d

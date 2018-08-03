@@ -1,0 +1,2 @@
+#!/bin/bash
+docker run -v $(pwd):/repo -w /repo -t snapcore/snapcraft snapcraft $@
