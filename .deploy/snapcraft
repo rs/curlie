@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ "$1" = "push-all" ]; then
+    for snap in dist/*.snap; do
+	sc push /repo/$snap
+    done
+else
+    sc $@
+fi
+
+sc() {
+    docker run -v $(pwd):/repo -w /repo -t snapcore/snapcraft snapcraft $@
+}

@@ -1,14 +1,16 @@
 project_name: curl-httpie
 builds:
--
-  env:
-  - CGO_ENABLED=0
-  goos:
-  - darwin
-  - linux
-  - freebsd
-  - windows
-  binary: http
+  -
+    binary: http
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - freebsd
+      - windows
+release:
+  name_template: "{{.ProjectName}}-v{{.Version}}"
 git:
   short_hash: true
 brew:
@@ -19,9 +21,15 @@ brew:
     name: Olivier Poitrey
     email: rs@rhapsodyk.net
   homepage: https://github.com/rs/curl-httpie
-  description: HTTPie for curl
+  description: HTTPie for curl — The power of curl, the ease of use of httpie.
   conflicts:
-  - httpie
-
-release:
-  name_template: "{{.ProjectName}}-v{{.Version}}"
+    - httpie
+snapcraft:
+  grade: stable
+  confinement: strict
+  summary: HTTPie for curl — The power of curl, the ease of use of httpie.
+  description: |
+    If you like the interface of httpie but miss the features of curl, curl-httpie
+    is what you are searching for. Curl-httpie is a drop-in replacement for httpie
+    that use curl to perform operations. All curl options exposed with most syntax
+    sugar and output formatting provided by httpie.
