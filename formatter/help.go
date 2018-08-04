@@ -11,6 +11,7 @@ type HelpAdapter struct {
 }
 
 func (j HelpAdapter) Write(p []byte) (n int, err error) {
+	n = len(p)
 	cmd := "http"
 	if len(j.CmdName) == 0 {
 		cmd = j.CmdName
@@ -18,5 +19,6 @@ func (j HelpAdapter) Write(p []byte) (n int, err error) {
 	p = bytes.Replace(p,
 		[]byte("curl [options...] <url>"),
 		[]byte(cmd+" [options...] [METHOD] URL [REQUEST_ITEM [REQUEST_ITEM ...]]"), 1)
-	return j.Out.Write(p)
+	_, err = j.Out.Write(p)
+	return
 }
