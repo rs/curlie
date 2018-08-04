@@ -10,6 +10,8 @@ Using [homebrew](http://brew.sh/):
 brew install rs/tap/curl-httpie
 ```
 
+Or download a [binary package](https://github.com/rs/curl-httpie/releases/latest).
+
 ## Usage
 
 Hello World:
