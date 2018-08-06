@@ -64,8 +64,6 @@ func (j *JSON) Write(p []byte) (n int, err error) {
 		case ' ', '\t', '\r', '\n':
 			// Skip spaces outside of quoted areas.
 			continue
-		}
-		switch b {
 		case '{', '[':
 			j.isValue = false
 			j.level++
@@ -76,6 +74,10 @@ func (j *JSON) Write(p []byte) (n int, err error) {
 				j.level = 0
 			}
 			cp = append(append(append(append(cp, '\n'), bytes.Repeat(indent, j.level)...), cs.Default...), b)
+			if b == '}' && j.level == 0 {
+				// Add a return after the outer closing brace.
+				cp = append(cp, '\n')
+			}
 		case ':':
 			j.isValue = true
 			cp = append(append(cp, cs.Default...), b, ' ')
