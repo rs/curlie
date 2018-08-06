@@ -67,6 +67,7 @@ func main() {
 				Scheme: formatter.DefaultColorScheme,
 			}
 		}
+		hasInput := true
 		if data := opts.Val("d"); data != "" {
 			// If data is provided via -d, read it from there for the verbose mode.
 			// XXX handle the @filename case.
@@ -76,8 +77,14 @@ func main() {
 			opts = append(opts, "-d@-")
 			// Tee the stdin to the buffer used show the posted data in verbose mode.
 			stdin = io.TeeReader(stdin, inputWriter)
+		} else {
+			hasInput = false
+		}
+		if hasInput {
+			opts = append(opts, "-H", "Content-Type: application/json")
 		}
 	}
+	opts = append(opts, "-H", "Accept: application/json, */*")
 	if opts.Has("curl") {
 		opts.Remove("curl")
 		fmt.Printf("curl %s\n", strings.Join(opts, " "))

@@ -34,11 +34,17 @@ func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
 		ignore := false
 		b, i := firstVisibleChar(c.line)
 		switch b {
-		case '>', '<':
+		case '>':
+			if c.Verbose {
+				c.line = c.line[i+2:]
+			} else {
+				ignore = true
+			}
+		case '<':
 			c.line = c.line[i+2:]
 		case '}', '{':
 			ignore = true
-			if c.Post != nil {
+			if c.Verbose && c.Post != nil {
 				cp = append(append(cp, bytes.TrimSpace(c.Post.Bytes())...), '\n', '\n')
 				c.Post = nil
 			}
