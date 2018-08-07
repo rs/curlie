@@ -1,4 +1,4 @@
-module github.com/rs/curl-httpie
+module github.com/rs/curlie
 
 require (
 	github.com/akamensky/argparse v0.0.0-20180518035907-99676ba18cd5 // indirect

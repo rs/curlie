@@ -9,8 +9,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/rs/curl-httpie/args"
-	"github.com/rs/curl-httpie/formatter"
+	"github.com/rs/curlie/args"
+	"github.com/rs/curlie/formatter"
 	"golang.org/x/crypto/ssh/terminal"
 )
 

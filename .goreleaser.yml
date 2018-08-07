@@ -1,7 +1,7 @@
-project_name: curl-httpie
+project_name: curlie
 builds:
   -
-    binary: http
+    binary: curlie
     env:
       - CGO_ENABLED=0
     goos:
@@ -20,19 +20,15 @@ brew:
   commit_author:
     name: Olivier Poitrey
     email: rs@rhapsodyk.net
-  homepage: https://github.com/rs/curl-httpie
-  description: HTTPie for curl — The power of curl, the ease of use of httpie.
-  conflicts:
-    - httpie
+  homepage: https://github.com/rs/curlie
+  description: The power of curl, the ease of use of httpie.
 nfpm:
   maintainer: Olivier Poitrey <rs@rhapsodyk.net>
-  description: curl-httpie is a wrapper on top of curl that offers the ease of use of httpie without having to compromise curl features and performance.
+  description: curle is a frontend to curl that offers the ease of use of httpie without having to compromise curl features and performance.
   license: MIT
   formats:
     - deb
     - rpm
   dependencies:
     - curl
-  conflicts:
-    - httpie
   bindir: /usr/bin
