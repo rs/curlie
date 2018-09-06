@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -97,6 +98,9 @@ func main() {
 		Out:     stderr,
 		Verbose: verbose,
 		Post:    input,
+	}
+	if (opts.Has("I") || opts.Has("head")) && terminal.IsTerminal(1) {
+		cmd.Stdout = ioutil.Discard
 	}
 	status := 0
 	if err := cmd.Run(); err != nil {
