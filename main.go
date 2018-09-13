@@ -57,6 +57,8 @@ func main() {
 				Out:    stdout,
 				Scheme: formatter.DefaultColorScheme,
 			}
+			// Filter out binary output.
+			stdout = &formatter.BinaryFilter{Out: stdout}
 		}
 		if pretty || terminal.IsTerminal(2) {
 			// If stderr is not redirected, output headers.
