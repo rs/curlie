@@ -88,7 +88,15 @@ func main() {
 	opts = append(opts, "-H", "Accept: application/json, */*")
 	if opts.Has("curl") {
 		opts.Remove("curl")
-		fmt.Printf("curl %s\n", strings.Join(opts, " "))
+		fmt.Print("curl")
+		for _, opt := range opts {
+			if strings.IndexByte(opt, ' ') != -1 {
+				fmt.Printf(" %q", opt)
+			} else {
+				fmt.Printf(" %s", opt)
+			}
+		}
+		fmt.Println()
 		return
 	}
 	cmd := exec.Command("curl", opts...)
