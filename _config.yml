@@ -1,1 +1,3 @@
 theme: jekyll-theme-hacker
+plugins:
+  - jekyll-seo-tag
