@@ -16,7 +16,7 @@ Or download a [binary package](https://github.com/rs/curlie/releases/latest).
 
 Synopsis:
 
-    $ http [CURL_OPTIONS...] [METHOD] URL [ITEM [ITEM]]
+    $ curlie [CURL_OPTIONS...] [METHOD] URL [ITEM [ITEM]]
 
 Simple GET:
 
