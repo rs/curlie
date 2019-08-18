@@ -30,7 +30,7 @@ Custom method, headers and JSON data:
 
 * Like `curl` but unlike `httpie`, headers are written on `stderr` instead of `stdout`.
 * Output is not buffered, all the formatting is done on the fly so you can easily debug streamed data.
-* User the `--curl` option to print executed curl command.
+* Use the `--curl` option to print executed curl command.
 
 ## License
 
