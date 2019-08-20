@@ -10,6 +10,12 @@ Using [homebrew](https://brew.sh/):
 brew install rs/tap/curlie
 ```
 
+Using [pkg](https://man.freebsd.org/pkg/8):
+
+```
+pkg install curlie
+```
+
 Or download a [binary package](https://github.com/rs/curlie/releases/latest).
 
 ## Usage
