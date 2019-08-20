@@ -4,7 +4,7 @@ If you like the interface of [HTTPie](https://httpie.org) but miss the features 
 
 ## Install
 
-Using [homebrew](http://brew.sh/):
+Using [homebrew](https://brew.sh/):
 
 ```
 brew install rs/tap/curlie
