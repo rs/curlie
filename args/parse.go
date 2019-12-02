@@ -77,6 +77,7 @@ func Parse(argv []string) (opts Opts) {
 				if j == len(arg)-1 {
 					if i+1 < len(argv) {
 						opts = append(opts, argv[i+1])
+						i++
 					}
 				} else {
 					opts = append(opts, arg[j+1:])
