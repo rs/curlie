@@ -13,7 +13,7 @@ type HelpAdapter struct {
 func (j HelpAdapter) Write(p []byte) (n int, err error) {
 	n = len(p)
 	cmd := "curlie"
-	if len(j.CmdName) == 0 {
+	if j.CmdName != "" {
 		cmd = j.CmdName
 	}
 	p = bytes.Replace(p,
