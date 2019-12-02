@@ -27,11 +27,32 @@ func (opts Opts) Has(opt string) bool {
 	return opts.index(opt) != -1
 }
 
+// Val return the value of the first occurance of opt.
 func (opts Opts) Val(opt string) string {
 	if idx := opts.index(opt); idx != -1 && idx+1 < len(opts) {
 		return opts[idx+1]
 	}
 	return ""
+}
+
+// Vals return the values of all occurances of opt.
+func (opts Opts) Vals(opt string) []string {
+	var vals []string
+	off := 1
+	if len(opt) > 1 {
+		off = 2
+	}
+	for i, o := range opts {
+		if len(o) >= 2 && o[0] == '-' {
+			if o[off:] == opt {
+				if i+1 < len(opts) {
+					i++
+					vals = append(vals, opts[i])
+				}
+			}
+		}
+	}
+	return vals
 }
 
 // Remove removes all occurrences of opt and return true if found.

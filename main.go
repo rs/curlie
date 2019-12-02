@@ -84,10 +84,14 @@ func main() {
 			hasInput = false
 		}
 		if hasInput {
-			opts = append(opts, "-H", "Content-Type: application/json")
+			if !headerSupplied(opts, "Content-Type") {
+				opts = append(opts, "-H", "Content-Type: application/json")
+			}
 		}
 	}
-	opts = append(opts, "-H", "Accept: application/json, */*")
+	if !headerSupplied(opts, "Accept") {
+		opts = append(opts, "-H", "Accept: application/json, */*")
+	}
 	if opts.Has("curl") {
 		opts.Remove("curl")
 		fmt.Print("curl")
@@ -127,4 +131,14 @@ func main() {
 		}
 	}
 	os.Exit(status)
+}
+
+func headerSupplied(opts args.Opts, header string) bool {
+	header = strings.ToLower(header)
+	for _, h := range append(opts.Vals("H"), opts.Vals("header")...) {
+		if strings.HasPrefix(strings.ToLower(h), header+":") {
+			return true
+		}
+	}
+	return false
 }
