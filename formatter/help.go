@@ -12,7 +12,7 @@ type HelpAdapter struct {
 
 func (j HelpAdapter) Write(p []byte) (n int, err error) {
 	n = len(p)
-	cmd := "http"
+	cmd := "curlie"
 	if len(j.CmdName) == 0 {
 		cmd = j.CmdName
 	}
