@@ -11,8 +11,6 @@ builds:
       - windows
 release:
   name_template: "{{.ProjectName}}-v{{.Version}}"
-git:
-  short_hash: true
 brew:
   github:
     owner: rs
