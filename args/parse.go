@@ -27,7 +27,7 @@ func (opts Opts) Has(opt string) bool {
 	return opts.index(opt) != -1
 }
 
-// Val return the value of the first occurance of opt.
+// Val return the value of the first occurrence of opt.
 func (opts Opts) Val(opt string) string {
 	if idx := opts.index(opt); idx != -1 && idx+1 < len(opts) {
 		return opts[idx+1]
@@ -35,7 +35,7 @@ func (opts Opts) Val(opt string) string {
 	return ""
 }
 
-// Vals return the values of all occurances of opt.
+// Vals return the values of all occurrences of opt.
 func (opts Opts) Vals(opt string) []string {
 	var vals []string
 	off := 1
