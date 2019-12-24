@@ -23,8 +23,11 @@ func parseFancyArgs(args []string) (opts []string) {
 	}
 	method := strings.ToUpper(args[0])
 	switch method {
-	case "HEAD", "GET", "POST", "PUT", "DELETE":
+	case "GET", "POST", "PUT", "DELETE":
 		opts = append(opts, "-X", method)
+		args = args[1:]
+	case "HEAD":
+		opts = append(opts, "-I")
 		args = args[1:]
 	}
 	if len(args) == 0 {
