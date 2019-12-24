@@ -38,9 +38,13 @@ func main() {
 
 	// Change default method based on binary name.
 	switch os.Args[0] {
-	case "post", "put", "delete", "head":
+	case "post", "put", "delete":
 		if !opts.Has("X") && !opts.Has("request") {
 			opts = append(opts, "-X", os.Args[0])
+		}
+	case "head":
+		if !opts.Has("I") && !opts.Has("head") {
+			opts = append(opts, "-I")
 		}
 	}
 
