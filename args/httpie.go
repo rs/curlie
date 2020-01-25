@@ -17,7 +17,7 @@ const (
 	jsonArg
 )
 
-func parseFancyArgs(args []string) (opts []string) {
+func parseFancyArgs(args []string, isForm bool) (opts Opts) {
 	if len(args) == 0 {
 		return
 	}
@@ -43,7 +43,11 @@ func parseFancyArgs(args []string) (opts []string) {
 		case paramArg:
 			url = appendURLParam(url, name, value)
 		case fieldArg:
-			data[name] = value
+			if isForm {
+				opts = append(opts, "-F", name+"="+value)
+			} else {
+				data[name] = value
+			}
 		case jsonArg:
 			var v interface{}
 			json.Unmarshal([]byte(value), &v)
