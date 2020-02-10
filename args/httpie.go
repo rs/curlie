@@ -17,7 +17,14 @@ const (
 	jsonArg
 )
 
-func parseFancyArgs(args []string, isForm bool) (opts Opts) {
+type Postmode int
+
+const (
+	JSON Postmode = iota + 1
+	FORM
+)
+
+func parseFancyArgs(args []string, postMode Postmode) (opts Opts) {
 	if len(args) == 0 {
 		return
 	}
@@ -43,7 +50,7 @@ func parseFancyArgs(args []string, isForm bool) (opts Opts) {
 		case paramArg:
 			url = appendURLParam(url, name, value)
 		case fieldArg:
-			if isForm {
+			if postMode == FORM {
 				opts = append(opts, "-F", name+"="+value)
 			} else {
 				data[name] = value
