@@ -20,8 +20,8 @@ const (
 type Postmode int
 
 const (
-	JSON Postmode = iota + 1
-	FORM
+	PostModeJSON Postmode = iota + 1
+	PostModeFORM
 )
 
 func parseFancyArgs(args []string, postMode Postmode) (opts Opts) {
@@ -50,7 +50,7 @@ func parseFancyArgs(args []string, postMode Postmode) (opts Opts) {
 		case paramArg:
 			url = appendURLParam(url, name, value)
 		case fieldArg:
-			if postMode == FORM {
+			if postMode == PostModeFORM {
 				opts = append(opts, "-F", name+"="+value)
 			} else {
 				data[name] = value

@@ -113,9 +113,9 @@ func Parse(argv Opts) (opts Opts) {
 		}
 	}
 	if len(args) > 0 {
-		postMode := JSON
+		postMode := PostModeJSON
 		if isForm {
-			postMode = FORM
+			postMode = PostModeFORM
 		}
 		opts = append(opts, parseFancyArgs(args, postMode)...)
 	}
