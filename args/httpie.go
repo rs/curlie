@@ -17,14 +17,14 @@ const (
 	jsonArg
 )
 
-type Postmode int
+type PostMode int
 
 const (
-	PostModeJSON Postmode = iota + 1
+	PostModeJSON PostMode = iota + 1
 	PostModeFORM
 )
 
-func parseFancyArgs(args []string, postMode Postmode) (opts Opts) {
+func parseFancyArgs(args []string, postMode PostMode) (opts Opts) {
 	if len(args) == 0 {
 		return
 	}
