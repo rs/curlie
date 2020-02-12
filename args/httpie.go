@@ -17,7 +17,14 @@ const (
 	jsonArg
 )
 
-func parseFancyArgs(args []string) (opts []string) {
+type PostMode int
+
+const (
+	PostModeJSON PostMode = iota + 1
+	PostModeFORM
+)
+
+func parseFancyArgs(args []string, postMode PostMode) (opts Opts) {
 	if len(args) == 0 {
 		return
 	}
@@ -43,7 +50,11 @@ func parseFancyArgs(args []string) (opts []string) {
 		case paramArg:
 			url = appendURLParam(url, name, value)
 		case fieldArg:
-			data[name] = value
+			if postMode == PostModeFORM {
+				opts = append(opts, "-F", name+"="+value)
+			} else {
+				data[name] = value
+			}
 		case jsonArg:
 			var v interface{}
 			json.Unmarshal([]byte(value), &v)

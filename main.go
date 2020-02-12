@@ -51,6 +51,7 @@ func main() {
 	if opts.Has("h") || opts.Has("help") {
 		stdout = &formatter.HelpAdapter{Out: stdout, CmdName: os.Args[0]}
 	} else {
+		isForm := opts.Has("F")
 		if pretty || terminal.IsTerminal(1) {
 			inputWriter = &formatter.JSON{
 				Out:    inputWriter,
@@ -88,7 +89,7 @@ func main() {
 			hasInput = false
 		}
 		if hasInput {
-			if !headerSupplied(opts, "Content-Type") {
+			if !headerSupplied(opts, "Content-Type") && !isForm {
 				opts = append(opts, "-H", "Content-Type: application/json")
 			}
 		}
