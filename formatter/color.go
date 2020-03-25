@@ -32,7 +32,7 @@ const (
 func (cs ColorScheme) Color(name ColorName) string {
 	switch name {
 	case ResetColor:
-		return "\x1b[39m"
+		return "\x1b[0m"
 	case DefaultColor:
 		return cs.Default
 	case CommentColor:
@@ -56,13 +56,13 @@ func (cs ColorScheme) IsZero() bool {
 }
 
 var DefaultColorScheme = ColorScheme{
-	Default: "\x1b[38;5;245m",
-	Comment: "\x1b[38;5;237m",
-	Status:  "\x1b[38;5;136m",
-	Field:   "\x1b[38;5;33m",
-	Value:   "\x1b[38;5;37m",
-	Literal: "\x1b[38;5;166m",
-	Error:   "\x1b[38;5;1m",
+	Default: "\x1b[37m",
+	Comment: "\x1b[90m",
+	Status:  "\x1b[33m",
+	Field:   "\x1b[34m",
+	Value:   "\x1b[36m",
+	Literal: "\x1b[35m",
+	Error:   "\x1b[31m",
 }
 
 type HeaderColorizer struct {
