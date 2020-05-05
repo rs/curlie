@@ -24,7 +24,7 @@ var indent = []byte(`    `)
 func (j *JSON) Write(p []byte) (n int, err error) {
 	if !j.inited && len(p) > 0 {
 		// Only JSON object are supported.
-		j.disabled = p[0] != '{'
+		j.disabled = (p[0] != '{' && p[0] != '[')
 		j.inited = true
 	}
 	if j.disabled {
@@ -75,7 +75,7 @@ func (j *JSON) Write(p []byte) (n int, err error) {
 				j.level = 0
 			}
 			cp = append(append(append(append(cp, '\n'), bytes.Repeat(indent, j.level)...), cs.Default...), b)
-			if b == '}' && j.level == 0 {
+			if (p[0] != '}' && p[0] != ']') && j.level == 0 {
 				// Add a return after the outer closing brace.
 				cp = append(cp, '\n')
 			}
