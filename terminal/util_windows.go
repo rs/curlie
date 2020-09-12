@@ -15,20 +15,17 @@
 // See https://stackoverflow.com/a/38612652/151312
 package terminal
 
-import (
-	"golang.org/x/sys/windows"
-)
-
 var fdStdin = 0
 
 // IsTerminal returns whether the given file descriptor is a terminal.
 func IsTerminal(fd int) bool {
-	if fdStdin == fd {
-		// This is a hack. See the note above to help fix this.
-		return true
-	}
-
-	var st uint32
-	err := windows.GetConsoleMode(windows.Handle(fd), &st)
-	return err == nil
+	// Neither cmd.exe nor Windows Terminal 1.0 are detected as a
+	// Terminal through the proper means. However, Windows Terminal
+	// seems to remove formatting to Stdout when redirecting to a file.
+	/*
+		var st uint32
+		err := windows.GetConsoleMode(windows.Handle(fd), &st)
+		return err == nil
+	*/
+	return true
 }
