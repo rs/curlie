@@ -16,6 +16,12 @@ import (
 )
 
 func main() {
+	// *nixes use 0, 1, 2
+	// Windows uses random numbers
+	stdinFd := int(os.Stdin.Fd())
+	stdoutFd := int(os.Stdout.Fd())
+	stderrFd := int(os.Stderr.Fd())
+
 	var stdout io.Writer = os.Stdout
 	var stderr io.Writer = os.Stderr
 	var stdin io.Reader = os.Stdin
@@ -52,7 +58,7 @@ func main() {
 		stdout = &formatter.HelpAdapter{Out: stdout, CmdName: os.Args[0]}
 	} else {
 		isForm := opts.Has("F")
-		if pretty || terminal.IsTerminal(1) {
+		if pretty || terminal.IsTerminal(stdoutFd) {
 			inputWriter = &formatter.JSON{
 				Out:    inputWriter,
 				Scheme: formatter.DefaultColorScheme,
@@ -65,7 +71,7 @@ func main() {
 			// Filter out binary output.
 			stdout = &formatter.BinaryFilter{Out: stdout}
 		}
-		if pretty || terminal.IsTerminal(2) {
+		if pretty || terminal.IsTerminal(stderrFd) {
 			// If stderr is not redirected, output headers.
 			if !quiet {
 				opts = append(opts, "-v")
@@ -80,7 +86,7 @@ func main() {
 			// If data is provided via -d, read it from there for the verbose mode.
 			// XXX handle the @filename case.
 			inputWriter.Write([]byte(data))
-		} else if !terminal.IsTerminal(0) {
+		} else if !terminal.IsTerminal(stdinFd) {
 			// If something is piped in to the command, tell curl to use it as input.
 			opts = append(opts, "-d@-")
 			// Tee the stdin to the buffer used show the posted data in verbose mode.
@@ -118,7 +124,7 @@ func main() {
 		Verbose: verbose,
 		Post:    input,
 	}
-	if (opts.Has("I") || opts.Has("head")) && terminal.IsTerminal(1) {
+	if (opts.Has("I") || opts.Has("head")) && terminal.IsTerminal(stdoutFd) {
 		cmd.Stdout = ioutil.Discard
 	}
 	status := 0
