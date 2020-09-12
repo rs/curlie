@@ -12,7 +12,7 @@ import (
 
 	"github.com/rs/curlie/args"
 	"github.com/rs/curlie/formatter"
-	"golang.org/x/crypto/ssh/terminal"
+	"github.com/rs/curlie/terminal"
 )
 
 func main() {
