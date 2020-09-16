@@ -34,7 +34,7 @@ Custom method, headers and JSON data:
 
 ## Build
 
-Build with `goreleaser` to test that all platforms compile properly.
+Build with [goreleaser](https://goreleaser.com) to test that all platforms compile properly.
 
 ```bash
 goreleaser --snapshot --skip-publish --rm-dist
