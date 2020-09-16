@@ -15,7 +15,20 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
+var (
+	commit  = "0000000"
+	version = "v0.0.0-LOCAL"
+	date    = "0000-00-00T00:00:00Z"
+)
+
 func main() {
+	// handle `curlie version` separately from `curl --version`
+	if 2 == len(os.Args) && "version" == os.Args[1] {
+		fmt.Printf("curlie %s (%s)\n", version, date)
+		os.Exit(0)
+		return
+	}
+
 	// *nixes use 0, 1, 2
 	// Windows uses random numbers
 	stdinFd := int(os.Stdin.Fd())

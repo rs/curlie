@@ -32,6 +32,20 @@ Custom method, headers and JSON data:
 
 ![](doc/put.png)
 
+## Build
+
+Build with `goreleaser` to test that all platforms compile properly.
+
+```bash
+goreleaser --snapshot --skip-publish --rm-dist
+```
+
+Or with `go build` for your current platform only.
+
+```bash
+go build .
+```
+
 ## Differences with httpie
 
 * Like `curl` but unlike `httpie`, headers are written on `stderr` instead of `stdout`.
