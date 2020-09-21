@@ -10,7 +10,7 @@ deploy:
   on:
     branch: master
     tags: true
-    condition: "$TRAVIS_OS_NAME = linux && $TRAVIS_GO_VERSION = '1.10'"
+    condition: "$TRAVIS_OS_NAME = linux && $TRAVIS_GO_VERSION = '1.15'"
   skip_cleanup: true
   script: sudo apt-get update && sudo apt-get install rpm && curl -sL http://git.io/goreleaser | bash
 env:
