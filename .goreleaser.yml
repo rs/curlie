@@ -12,21 +12,23 @@ builds:
 release:
   name_template: "{{.ProjectName}}-v{{.Version}}"
 brews:
-  tap:
-    owner: rs
-    name: homebrew-tap
-  commit_author:
-    name: Olivier Poitrey
-    email: rs@rhapsodyk.net
-  homepage: https://curlie.io
-  description: The power of curl, the ease of use of httpie.
+  -
+    tap:
+      owner: rs
+      name: homebrew-tap
+    commit_author:
+      name: Olivier Poitrey
+      email: rs@rhapsodyk.net
+    homepage: https://curlie.io
+    description: The power of curl, the ease of use of httpie.
 nfpms:
-  maintainer: Olivier Poitrey <rs@rhapsodyk.net>
-  description: curle is a frontend to curl that offers the ease of use of httpie without having to compromise curl features and performance.
-  license: MIT
-  formats:
-    - deb
-    - rpm
-  dependencies:
-    - curl
-  bindir: /usr/bin
+  -
+    maintainer: Olivier Poitrey <rs@rhapsodyk.net>
+    description: curle is a frontend to curl that offers the ease of use of httpie without having to compromise curl features and performance.
+    license: MIT
+    formats:
+      - deb
+      - rpm
+    dependencies:
+      - curl
+    bindir: /usr/bin
