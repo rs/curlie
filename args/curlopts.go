@@ -1,9 +1,10 @@
 package args
 
 var (
-	curlShortValues = "EKCbcdDFPHmoUreXYytzTuAw"
+	curlShortValues = "EKCbcdDFPHhmoUreXYytzTuAw"
 	curlLongValues  = []string{
 		"abstract-unix-socket",
+		"alt-svc",
 		"cacert",
 		"capath",
 		"cert",
@@ -16,6 +17,7 @@ var (
 		"cookie",
 		"cookie-jar",
 		"crlfile",
+		"curves",
 		"data",
 		"data-ascii",
 		"data-binary",
@@ -26,9 +28,12 @@ var (
 		"dns-ipv4-addr",
 		"dns-ipv6-addr",
 		"dns-servers",
+		"doh-url",
 		"dump-header",
 		"egd-file",
 		"engine",
+		"etag-compare",
+		"etag-save",
 		"expect100-timeout",
 		"form",
 		"form-string",
@@ -39,6 +44,7 @@ var (
 		"ftp-ssl-ccc-mode",
 		"happy-eyeballs-timeout-ms",
 		"header",
+		"help",
 		"hostpubmd5",
 		"interface",
 		"keepalive-time",
@@ -59,6 +65,7 @@ var (
 		"noproxy",
 		"oauth2-bearer",
 		"output",
+		"output-dir",
 		"pass",
 		"pinnedpubkey",
 		"proto",
@@ -91,6 +98,7 @@ var (
 		"retry",
 		"retry-delay",
 		"retry-max-time",
+		"sasl-authzid",
 		"service-name",
 		"socks4",
 		"socks4a",

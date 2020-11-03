@@ -49,7 +49,7 @@ func main() {
 
 	if len(opts) == 0 {
 		// Show help if no args
-		opts = append(opts, "-h")
+		opts = append(opts, "-h", "all")
 	} else {
 		// Remove progress bar.
 		opts = append(opts, "-s", "-S")
