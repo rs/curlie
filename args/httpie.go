@@ -30,7 +30,7 @@ func parseFancyArgs(args []string, postMode PostMode) (opts Opts) {
 	}
 	method := strings.ToUpper(args[0])
 	switch method {
-	case "GET", "POST", "PUT", "DELETE":
+	case "GET", "POST", "PUT", "DELETE", "OPTIONS":
 		opts = append(opts, "-X", method)
 		args = args[1:]
 	case "HEAD":
