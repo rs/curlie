@@ -10,6 +10,12 @@ Using [homebrew](https://brew.sh/):
 brew install rs/tap/curlie
 ```
 
+Using [macports](https://www.macports.org):
+
+```
+sudo port install curlie
+```
+
 Using [pkg](https://man.freebsd.org/pkg/8):
 
 ```
