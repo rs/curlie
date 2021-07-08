@@ -9,6 +9,10 @@ builds:
       - linux
       - freebsd
       - windows
+    goarch:
+      - amd64
+      - arm
+      - arm64
 release:
   name_template: "{{.ProjectName}}-v{{.Version}}"
 brews:
