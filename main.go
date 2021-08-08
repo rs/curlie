@@ -7,12 +7,14 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"syscall"
 
 	"github.com/rs/curlie/args"
 	"github.com/rs/curlie/formatter"
 	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/sys/windows"
 )
 
 var (
@@ -23,7 +25,7 @@ var (
 
 func main() {
 	// handle `curlie version` separately from `curl --version`
-	if 2 == len(os.Args) && "version" == os.Args[1] {
+	if len(os.Args) == 2 && os.Args[1] == "version" {
 		fmt.Printf("curlie %s (%s)\n", version, date)
 		os.Exit(0)
 		return
@@ -34,6 +36,19 @@ func main() {
 	stdinFd := int(os.Stdin.Fd())
 	stdoutFd := int(os.Stdout.Fd())
 	stderrFd := int(os.Stderr.Fd())
+
+	// Setting Console mode on windows to allow color output, In case
+	// of any error, disableColor output.
+	disableColor := false
+	if runtime.GOOS == "windows" {
+		console := windows.Handle(stdoutFd)
+		var originalMode uint32
+		windows.GetConsoleMode(console, &originalMode)
+		err := windows.SetConsoleMode(console, originalMode|windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+		if err != nil {
+			disableColor = true
+		}
+	}
 
 	var stdout io.Writer = os.Stdout
 	var stderr io.Writer = os.Stderr
@@ -72,15 +87,27 @@ func main() {
 	} else {
 		isForm := opts.Has("F")
 		if pretty || terminal.IsTerminal(stdoutFd) {
-			inputWriter = &formatter.JSON{
-				Out:    inputWriter,
-				Scheme: formatter.DefaultColorScheme,
+			// if disbleColor is true, then don't set Scheme.
+			if disableColor {
+				inputWriter = &formatter.JSON{
+					Out: inputWriter,
+				}
+				// Format JSON output if stdout is to the terminal.
+				stdout = &formatter.JSON{
+					Out: stdout,
+				}
+			} else {
+				inputWriter = &formatter.JSON{
+					Out:    inputWriter,
+					Scheme: formatter.DefaultColorScheme,
+				}
+				// Format/colorize JSON output if stdout is to the terminal.
+				stdout = &formatter.JSON{
+					Out:    stdout,
+					Scheme: formatter.DefaultColorScheme,
+				}
 			}
-			// Format/colorize JSON output if stdout is to the terminal.
-			stdout = &formatter.JSON{
-				Out:    stdout,
-				Scheme: formatter.DefaultColorScheme,
-			}
+
 			// Filter out binary output.
 			stdout = &formatter.BinaryFilter{Out: stdout}
 		}
@@ -89,10 +116,18 @@ func main() {
 			if !quiet {
 				opts = append(opts, "-v")
 			}
-			stderr = &formatter.HeaderColorizer{
-				Out:    stderr,
-				Scheme: formatter.DefaultColorScheme,
+			// if disbleColor is true, then don't set Scheme.
+			if disableColor {
+				stderr = &formatter.HeaderColorizer{
+					Out: stderr,
+				}
+			} else {
+				stderr = &formatter.HeaderColorizer{
+					Out:    stderr,
+					Scheme: formatter.DefaultColorScheme,
+				}
 			}
+
 		}
 		hasInput := true
 		if data := opts.Val("d"); data != "" {
