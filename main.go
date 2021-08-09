@@ -37,19 +37,18 @@ func main() {
 	stdoutFd := int(os.Stdout.Fd())
 	stderrFd := int(os.Stderr.Fd())
 
-	// Setting Console mode on windows to allow color output, In case
-	// of any error, disableColor output.
-	disableColor := false
+	// Setting Console mode on windows to allow color output, By default scheme is DefaultColorScheme
+	// But in case of any error, it is set to ColorScheme{}.
+	scheme := formatter.DefaultColorScheme
 	if runtime.GOOS == "windows" {
 		console := windows.Handle(stdoutFd)
 		var originalMode uint32
 		windows.GetConsoleMode(console, &originalMode)
 		err := windows.SetConsoleMode(console, originalMode|windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING)
 		if err != nil {
-			disableColor = true
+			scheme = formatter.ColorScheme{}
 		}
 	}
-
 	var stdout io.Writer = os.Stdout
 	var stderr io.Writer = os.Stderr
 	var stdin io.Reader = os.Stdin
@@ -87,25 +86,14 @@ func main() {
 	} else {
 		isForm := opts.Has("F")
 		if pretty || terminal.IsTerminal(stdoutFd) {
-			// if disbleColor is true, then don't set Scheme.
-			if disableColor {
-				inputWriter = &formatter.JSON{
-					Out: inputWriter,
-				}
-				// Format JSON output if stdout is to the terminal.
-				stdout = &formatter.JSON{
-					Out: stdout,
-				}
-			} else {
-				inputWriter = &formatter.JSON{
-					Out:    inputWriter,
-					Scheme: formatter.DefaultColorScheme,
-				}
-				// Format/colorize JSON output if stdout is to the terminal.
-				stdout = &formatter.JSON{
-					Out:    stdout,
-					Scheme: formatter.DefaultColorScheme,
-				}
+			inputWriter = &formatter.JSON{
+				Out:    inputWriter,
+				Scheme: scheme,
+			}
+			// Format/colorize JSON output if stdout is to the terminal.
+			stdout = &formatter.JSON{
+				Out:    stdout,
+				Scheme: scheme,
 			}
 
 			// Filter out binary output.
@@ -116,16 +104,10 @@ func main() {
 			if !quiet {
 				opts = append(opts, "-v")
 			}
-			// if disbleColor is true, then don't set Scheme.
-			if disableColor {
-				stderr = &formatter.HeaderColorizer{
-					Out: stderr,
-				}
-			} else {
-				stderr = &formatter.HeaderColorizer{
-					Out:    stderr,
-					Scheme: formatter.DefaultColorScheme,
-				}
+
+			stderr = &formatter.HeaderColorizer{
+				Out:    stderr,
+				Scheme: scheme,
 			}
 
 		}
