@@ -77,7 +77,14 @@ func (j *JSON) Write(p []byte) (n int, err error) {
 			cp = append(append(append(append(cp, '\n'), bytes.Repeat(indent, j.level)...), cs.Default...), b)
 			if (p[0] != '}' && p[0] != ']') && j.level == 0 {
 				// Add a return after the outer closing brace.
-				cp = append(append(cp, '\n'), cs.Color(ResetColor)...)
+				// If cs is zero that means color is disabled, so only append '\n'
+				// else append '\n' and ResetColor.
+				if cs.IsZero() {
+					cp = append(cp, '\n')
+				} else {
+					cp = append(append(cp, '\n'), cs.Color(ResetColor)...)
+				}
+
 			}
 		case ':':
 			j.isValue = true
