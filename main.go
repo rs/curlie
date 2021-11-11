@@ -7,14 +7,12 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 	"syscall"
 
 	"github.com/rs/curlie/args"
 	"github.com/rs/curlie/formatter"
 	"golang.org/x/crypto/ssh/terminal"
-	"golang.org/x/sys/windows"
 )
 
 var (
@@ -40,14 +38,8 @@ func main() {
 	// Setting Console mode on windows to allow color output, By default scheme is DefaultColorScheme
 	// But in case of any error, it is set to ColorScheme{}.
 	scheme := formatter.DefaultColorScheme
-	if runtime.GOOS == "windows" {
-		console := windows.Handle(stdoutFd)
-		var originalMode uint32
-		windows.GetConsoleMode(console, &originalMode)
-		err := windows.SetConsoleMode(console, originalMode|windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING)
-		if err != nil {
-			scheme = formatter.ColorScheme{}
-		}
+	if err := setupWindowsConsole(); err != nil {
+		scheme = formatter.ColorScheme{}
 	}
 	var stdout io.Writer = os.Stdout
 	var stderr io.Writer = os.Stderr
