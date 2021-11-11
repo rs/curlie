@@ -38,7 +38,7 @@ func main() {
 	// Setting Console mode on windows to allow color output, By default scheme is DefaultColorScheme
 	// But in case of any error, it is set to ColorScheme{}.
 	scheme := formatter.DefaultColorScheme
-	if err := setupWindowsConsole(); err != nil {
+	if err := setupWindowsConsole(stdoutFd); err != nil {
 		scheme = formatter.ColorScheme{}
 	}
 	var stdout io.Writer = os.Stdout

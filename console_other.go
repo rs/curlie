@@ -2,6 +2,6 @@
 
 package main
 
-func setupWindowsConsole() error {
+func setupWindowsConsole(stdoutFd int) error {
 	return nil
 }

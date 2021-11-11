@@ -2,7 +2,7 @@ package main
 
 import "golang.org/x/sys/windows"
 
-func setupWindowsConsole() error {
+func setupWindowsConsole(stdoutFd int) error {
 	console := windows.Handle(stdoutFd)
 	var originalMode uint32
 	windows.GetConsoleMode(console, &originalMode)

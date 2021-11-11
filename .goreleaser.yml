@@ -13,6 +13,10 @@ builds:
       - amd64
       - arm
       - arm64
+    ignore:
+      -
+        goos: windows
+        goarch: arm64
 release:
   name_template: "{{.ProjectName}}-v{{.Version}}"
 brews:
