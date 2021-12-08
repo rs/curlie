@@ -7,7 +7,7 @@ If you like the interface of [HTTPie](https://httpie.org) but miss the features 
 Using [homebrew](https://brew.sh/):
 
 ```
-brew install rs/tap/curlie
+brew install curlie
 ```
 
 Using [macports](https://www.macports.org):
