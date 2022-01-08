@@ -22,6 +22,12 @@ Using [pkg](https://man.freebsd.org/pkg/8):
 pkg install curlie
 ```
 
+Using [go](https://golang.org/):
+
+```
+go install github.com/rs/curlie@latest
+```
+
 Or download a [binary package](https://github.com/rs/curlie/releases/latest).
 
 ## Usage
