@@ -28,6 +28,12 @@ Using [go](https://golang.org/):
 go install github.com/rs/curlie@latest
 ```
 
+Using [scoop](https://scoop.sh/):
+
+```
+scoop install curlie
+```
+
 Or download a [binary package](https://github.com/rs/curlie/releases/latest).
 
 ## Usage
