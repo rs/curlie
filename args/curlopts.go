@@ -5,6 +5,7 @@ var (
 	curlLongValues  = []string{
 		"abstract-unix-socket",
 		"alt-svc",
+		"aws-sigv4",
 		"cacert",
 		"capath",
 		"cert",
@@ -16,6 +17,7 @@ var (
 		"continue-at",
 		"cookie",
 		"cookie-jar",
+		"create-file-mode",
 		"crlfile",
 		"curves",
 		"data",
@@ -46,6 +48,7 @@ var (
 		"header",
 		"help",
 		"hostpubmd5",
+		"hsts",
 		"interface",
 		"keepalive-time",
 		"key",
