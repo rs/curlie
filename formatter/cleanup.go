@@ -16,6 +16,8 @@ type HeaderCleaner struct {
 	// Post is inserted after the request headers.
 	Post *bytes.Buffer
 
+	HeadersDone chan<- struct{}
+
 	buf  []byte
 	line []byte
 }
@@ -29,6 +31,8 @@ func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
 	n = len(p)
 	cp := c.buf
 	p = bytes.Replace(p, capath, ccapath, 1) // Fix curl misformatted line
+
+	closeAfterWrite := false
 	for len(p) > 0 {
 		idx := bytes.IndexByte(p, '\n')
 		if idx == -1 {
@@ -48,6 +52,9 @@ func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
 			}
 		case '<':
 			c.line = c.line[i+2:]
+			if bytes.Equal(c.line, []byte("\r\n")) && c.HeadersDone != nil {
+				closeAfterWrite = true
+			}
 		case '}', '{':
 			ignore = true
 			if c.Verbose && c.Post != nil {
@@ -62,9 +69,13 @@ func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
 		if !ignore {
 			cp = append(cp, c.line...)
 		}
+
 		c.line = c.line[:0]
 	}
 	_, err = c.Out.Write(cp)
+	if closeAfterWrite {
+		close(c.HeadersDone)
+	}
 	return
 }
 

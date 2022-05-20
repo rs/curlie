@@ -138,14 +138,28 @@ func main() {
 		fmt.Println()
 		return
 	}
+
 	cmd := exec.Command("curl", opts...)
 	cmd.Stdin = stdin
 	cmd.Stdout = stdout
-	cmd.Stderr = &formatter.HeaderCleaner{
+
+	tmpOut := &formatter.HeaderCleaner{
 		Out:     stderr,
 		Verbose: verbose,
 		Post:    input,
 	}
+
+	if terminal.IsTerminal(stdoutFd) && terminal.IsTerminal(stderrFd) && !quiet {
+		headerBlock := make(chan struct{})
+		cmd.Stdout = &blockedWrite{
+			ch:  headerBlock,
+			out: stdout,
+		}
+		tmpOut.HeadersDone = headerBlock
+	}
+
+	cmd.Stderr = tmpOut
+
 	if (opts.Has("I") || opts.Has("head")) && terminal.IsTerminal(stdoutFd) {
 		cmd.Stdout = ioutil.Discard
 	}
@@ -174,4 +188,14 @@ func headerSupplied(opts args.Opts, header string) bool {
 		}
 	}
 	return false
+}
+
+type blockedWrite struct {
+	ch  <-chan struct{}
+	out io.Writer
+}
+
+func (c *blockedWrite) Write(p []byte) (n int, err error) {
+	<-c.ch
+	return c.out.Write(p)
 }
