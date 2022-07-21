@@ -50,6 +50,8 @@ Custom method, headers and JSON data:
 
 ![](doc/put.png)
 
+When running interactively, `curlie` provides pretty-printed output for json. To force pretty-printed output, pass `--pretty`.
+
 ## Build
 
 Build with [goreleaser](https://goreleaser.com) to test that all platforms compile properly.
