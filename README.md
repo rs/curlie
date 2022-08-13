@@ -6,31 +6,43 @@ If you like the interface of [HTTPie](https://httpie.org) but miss the features 
 
 Using [homebrew](https://brew.sh/):
 
-```
+```sh
 brew install rs/tap/curlie
+```
+
+Using [webi](https://webinstall.dev/curlie/):
+
+```sh
+# macOS / Linux
+curl -sS https://webinstall.dev/curlie | bash
+```
+
+```pwsh
+# Windows
+curl.exe -A "MS" https://webinstall.dev/curlie | powershell
 ```
 
 Using [macports](https://www.macports.org):
 
-```
+```sh
 sudo port install curlie
 ```
 
 Using [pkg](https://man.freebsd.org/pkg/8):
 
-```
+```sh
 pkg install curlie
 ```
 
 Using [go](https://golang.org/):
 
-```
+```sh
 go install github.com/rs/curlie@latest
 ```
 
 Using [scoop](https://scoop.sh/):
 
-```
+```sh
 scoop install curlie
 ```
 
@@ -54,13 +66,13 @@ Custom method, headers and JSON data:
 
 Build with [goreleaser](https://goreleaser.com) to test that all platforms compile properly.
 
-```bash
+```sh
 goreleaser --snapshot --skip-publish --rm-dist
 ```
 
 Or with `go build` for your current platform only.
 
-```bash
+```sh
 go build .
 ```
 
