@@ -1,7 +1,7 @@
 package args
 
 var (
-	curlShortValues = "EKCbcdDFPHhmoUreXYytzTuAw"
+	curlShortValues = "EKCbcdDFPHhmoUQreXYytzTuAw"
 	curlLongValues  = []string{
 		"abstract-unix-socket",
 		"alt-svc",
@@ -48,8 +48,10 @@ var (
 		"header",
 		"help",
 		"hostpubmd5",
+		"hostpubsha256",
 		"hsts",
 		"interface",
+		"json",
 		"keepalive-time",
 		"key",
 		"key-type",
@@ -69,6 +71,7 @@ var (
 		"oauth2-bearer",
 		"output",
 		"output-dir",
+		"parallel-max",
 		"pass",
 		"pinnedpubkey",
 		"proto",
@@ -93,10 +96,13 @@ var (
 		"proxy-user",
 		"proxy1.0",
 		"pubkey",
+		"quote",
 		"random-file",
 		"range",
+		"rate",
 		"referer",
 		"request",
+		"request-target",
 		"resolve",
 		"retry",
 		"retry-delay",
@@ -110,18 +116,21 @@ var (
 		"socks5-hostname",
 		"speed-limit",
 		"speed-time",
+		"stderr",
 		"telnet-option",
 		"tftp-blksize",
 		"time-cond",
 		"tls-max",
 		"tls13-ciphers",
 		"tlsauthtype",
+		"tlspassword",
 		"tlsuser",
 		"trace",
 		"trace-ascii",
 		"unix-socket",
 		"upload-file",
 		"url",
+		"url-query",
 		"user",
 		"user-agent",
 		"write-out"}
