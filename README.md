@@ -22,6 +22,14 @@ curl -sS https://webinstall.dev/curlie | bash
 curl.exe -A "MS" https://webinstall.dev/curlie | powershell
 ```
 
+Using [eget](https://github.com/zyedidia/eget):
+
+```sh
+# Ubuntu/Debian
+eget rs/curlie -a deb --to=curlie.deb
+sudo dpkg -i curlie.deb
+```
+
 Using [macports](https://www.macports.org):
 
 ```sh
