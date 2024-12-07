@@ -27,7 +27,7 @@ brews:
     commit_author:
       name: Olivier Poitrey
       email: rs@rhapsodyk.net
-    homepage: https://curlie.io
+    homepage: https://github.com/rs/curlie
     description: The power of curl, the ease of use of httpie.
 nfpms:
   -
