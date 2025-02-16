@@ -1,7 +1,7 @@
+version: 2
 project_name: curlie
 builds:
-  -
-    binary: curlie
+  - binary: curlie
     env:
       - CGO_ENABLED=0
     goos:
@@ -14,14 +14,12 @@ builds:
       - arm
       - arm64
     ignore:
-      -
-        goos: windows
+      - goos: windows
         goarch: arm64
 release:
   name_template: "{{.ProjectName}}-v{{.Version}}"
 brews:
-  -
-    tap:
+  - repository:
       owner: rs
       name: homebrew-tap
     commit_author:
@@ -30,8 +28,7 @@ brews:
     homepage: https://github.com/rs/curlie
     description: The power of curl, the ease of use of httpie.
 nfpms:
-  -
-    maintainer: Olivier Poitrey <rs@rhapsodyk.net>
+  - maintainer: Olivier Poitrey <rs@rhapsodyk.net>
     description: curle is a frontend to curl that offers the ease of use of httpie without having to compromise curl features and performance.
     license: MIT
     formats:

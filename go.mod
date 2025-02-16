@@ -1,8 +1,8 @@
 module github.com/rs/curlie
 
-require (
-	golang.org/x/sys v0.15.0
-	golang.org/x/term v0.15.0
-)
+go 1.24.0
 
-go 1.13
+require (
+	golang.org/x/sys v0.30.0
+	golang.org/x/term v0.29.0
+)
