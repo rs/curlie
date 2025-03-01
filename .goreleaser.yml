@@ -10,14 +10,41 @@ builds:
       - freebsd
       - windows
     goarch:
+      - 386
       - amd64
       - arm
       - arm64
-    ignore:
+      - ppc64le
+      - s390x
+    goarm:
+      - 6
+      - 7
+
+archives:
+  - format_overrides:
       - goos: windows
-        goarch: arm64
+        formats: ['zip']
+
+sboms:
+  - artifacts: archive
+    documents:
+      - "${artifact}.spdx.json"
+
 release:
   name_template: "{{.ProjectName}}-v{{.Version}}"
+
+signs:
+  - cmd: cosign
+    artifacts: checksum
+    output: true
+    certificate: "${artifact}.pem"
+    args:
+      - sign-blob
+      - "--output-signature=${signature}"
+      - "--output-certificate=${certificate}"
+      - "${artifact}"
+      - "--yes"
+
 brews:
   - repository:
       owner: rs
@@ -27,6 +54,7 @@ brews:
       email: rs@rhapsodyk.net
     homepage: https://github.com/rs/curlie
     description: The power of curl, the ease of use of httpie.
+
 nfpms:
   - maintainer: Olivier Poitrey <rs@rhapsodyk.net>
     description: curle is a frontend to curl that offers the ease of use of httpie without having to compromise curl features and performance.
