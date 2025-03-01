@@ -60,15 +60,17 @@ Or download a [binary package](https://github.com/rs/curlie/releases/latest).
 
 Synopsis:
 
-    $ curlie [CURL_OPTIONS...] [METHOD] URL [ITEM [ITEM]]
+```sh
+curlie [CURL_OPTIONS...] [METHOD] URL [ITEM [ITEM]]
+```
 
 Simple GET:
 
-![](doc/get.png)
+![Simple GET request example](doc/get.png)
 
 Custom method, headers and JSON data:
 
-![](doc/put.png)
+![Custom PUT request with headers and JSON data example](doc/put.png)
 
 When running interactively, `curlie` provides pretty-printed output for json. To force pretty-printed output, pass `--pretty`.
 
@@ -77,13 +79,13 @@ When running interactively, `curlie` provides pretty-printed output for json. To
 Build with [goreleaser](https://goreleaser.com) to test that all platforms compile properly.
 
 ```sh
-goreleaser --snapshot --skip-publish --rm-dist
+goreleaser build --clean --snapshot
 ```
 
-Or with `go build` for your current platform only.
+Or for your current platform only.
 
 ```sh
-go build .
+goreleaser build --clean --snapshot --single-target
 ```
 
 ## Differences with httpie
