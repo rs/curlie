@@ -25,11 +25,6 @@ archives:
       - goos: windows
         formats: ['zip']
 
-sboms:
-  - artifacts: archive
-    documents:
-      - "${artifact}.spdx.json"
-
 release:
   name_template: "{{.ProjectName}}-v{{.Version}}"
 
