@@ -2,11 +2,27 @@ name: goreleaser
 
 on:
   pull_request:
+    branches:
+      - master
   push:
+    branches:
+      - master
+    tags:
+      - "*"
+
+concurrency:
+  group: ${{ github.ref_name }}-goreleaser
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,6 +36,10 @@ jobs:
 
       - name: Test
         run: go test ./...
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+        if: github.ref_type == 'tag'
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
