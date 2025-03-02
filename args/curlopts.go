@@ -1,5 +1,7 @@
 package args
 
+import "sort"
+
 var (
 	curlShortValues = "EKCbcdDFPHhmoUQreXYytzTuAw"
 	curlLongValues  = []string{
@@ -77,6 +79,7 @@ var (
 		"proto",
 		"proto-default",
 		"proto-redir",
+		"proxy",
 		"proxy-cacert",
 		"proxy-capath",
 		"proxy-cert",
@@ -133,5 +136,10 @@ var (
 		"url-query",
 		"user",
 		"user-agent",
-		"write-out"}
+		"write-out",
+	}
 )
+
+func init() {
+	sort.Strings(curlLongValues)
+}
