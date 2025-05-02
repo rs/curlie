@@ -73,13 +73,16 @@ func parseFancyArgs(args []string, postMode PostMode) (opts Opts) {
 
 func normalizeURL(u string) string {
 	// If scheme is omitted, use http:
+	noScheme := false
 	if !strings.HasPrefix(u, "http") {
 		if strings.HasPrefix(u, "//") {
 			u = "http:" + u
 		} else {
 			u = "http://" + u
 		}
+		noScheme = true
 	}
+	println(u)
 	pu, err := url.Parse(u)
 	if err != nil {
 		fmt.Print(err)
@@ -91,7 +94,13 @@ func normalizeURL(u string) string {
 		// If :port is given with no hostname, add localhost
 		pu.Host = "localhost" + pu.Host
 	}
-	return pu.String()
+	nu := pu.String()
+	if noScheme {
+		// Remove the prefixed scheme added above so we let curl handle deal
+		// with the default scheme (ie if --proto-default is used)
+		nu = strings.TrimPrefix(nu, "http://")
+	}
+	return nu
 }
 
 func parseArg(arg string) (typ argType, name, value string) {
