@@ -5,17 +5,17 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	expected := []string{"http://example.com"}
+	expected := []string{"example.com"}
 	parseAndCompare(t, []string{"curlie", "example.com"}, expected)
 }
 
 func TestParsePost(t *testing.T) {
-	expected := []string{"-X", "POST", "http://example.com"}
+	expected := []string{"-X", "POST", "example.com"}
 	parseAndCompare(t, []string{"curlie", "post", "example.com"}, expected)
 }
 
 func TestParseHead(t *testing.T) {
-	expected := []string{"-I", "http://example.com"}
+	expected := []string{"-I", "example.com"}
 	parseAndCompare(t, []string{"curlie", "head", "example.com"}, expected)
 }
 
