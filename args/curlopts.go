@@ -3,7 +3,7 @@ package args
 import "sort"
 
 var (
-	curlShortValues = "EKCbcdDFPHhmoUQreXYytzTuAw"
+	curlShortValues = "EKCbcdDFPHhmoxUQreXYytzTuAw"
 	curlLongValues  = []string{
 		"abstract-unix-socket",
 		"alt-svc",
@@ -34,6 +34,7 @@ var (
 		"dns-servers",
 		"doh-url",
 		"dump-header",
+		"ech",
 		"egd-file",
 		"engine",
 		"etag-compare",
@@ -47,13 +48,17 @@ var (
 		"ftp-port",
 		"ftp-ssl-ccc-mode",
 		"happy-eyeballs-timeout-ms",
+		"haproxy-clientip",
 		"header",
 		"help",
 		"hostpubmd5",
 		"hostpubsha256",
 		"hsts",
 		"interface",
+		"ip-tos",
+		"ipfs-gateway",
 		"json",
+		"keepalive-cnt",
 		"keepalive-time",
 		"key",
 		"key-type",
@@ -76,6 +81,7 @@ var (
 		"parallel-max",
 		"pass",
 		"pinnedpubkey",
+		"preproxy",
 		"proto",
 		"proto-default",
 		"proto-redir",
@@ -112,6 +118,7 @@ var (
 		"retry-max-time",
 		"sasl-authzid",
 		"service-name",
+		"sigalgs",
 		"socks4",
 		"socks4a",
 		"socks5",
@@ -119,6 +126,7 @@ var (
 		"socks5-hostname",
 		"speed-limit",
 		"speed-time",
+		"ssl-sessions",
 		"stderr",
 		"telnet-option",
 		"tftp-blksize",
@@ -130,16 +138,24 @@ var (
 		"tlsuser",
 		"trace",
 		"trace-ascii",
+		"trace-config",
 		"unix-socket",
 		"upload-file",
+		"upload-flags",
 		"url",
 		"url-query",
 		"user",
 		"user-agent",
-		"write-out",
-	}
+		"variable",
+		"vlan-priority",
+		"write-out"}
 )
 
 func init() {
+	// add --expand-* variants for all value-taking options.
+	for i, n := 0, len(curlLongValues); i < n; i++ {
+		curlLongValues = append(curlLongValues, "expand-"+curlLongValues[i])
+	}
+
 	sort.Strings(curlLongValues)
 }
