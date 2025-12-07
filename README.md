@@ -54,6 +54,12 @@ Using [scoop](https://scoop.sh/):
 scoop install curlie
 ```
 
+Using [mise](https://github.com/jdx/mise):
+
+```sh
+mise use -g curlie@latest
+```
+
 Or download a [binary package](https://github.com/rs/curlie/releases/latest).
 
 ## Usage
