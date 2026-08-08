@@ -22,6 +22,8 @@ curl -sS https://webinstall.dev/curlie | bash
 curl.exe -A "MS" https://webinstall.dev/curlie | powershell
 ```
 
+On Windows, after webi or Scoop, open a **new** terminal so `PATH` picks up `curlie`. After `go install`, ensure `%USERPROFILE%\go\bin` (or `$env:GOBIN`) is on `PATH`.
+
 Using [eget](https://github.com/zyedidia/eget):
 
 ```sh
