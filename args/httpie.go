@@ -53,12 +53,12 @@ func parseFancyArgs(args []string, postMode PostMode) (opts Opts) {
 			if postMode == PostModeFORM {
 				opts = append(opts, "-F", name+"="+value)
 			} else {
-				data[name] = value
+				setJSONData(data, name, value)
 			}
 		case jsonArg:
 			var v interface{}
 			json.Unmarshal([]byte(value), &v)
-			data[name] = v
+			setJSONData(data, name, v)
 		default:
 			opts = append(opts, arg)
 		}
@@ -119,6 +119,23 @@ func parseArg(arg string) (typ argType, name, value string) {
 		}
 	}
 	return
+}
+
+// setJSONData stores value under name. Names ending with "[]" follow HTTPie
+// array syntax: key[]=a key[]=b becomes {"key":["a","b"]}.
+func setJSONData(data map[string]interface{}, name string, value interface{}) {
+	if strings.HasSuffix(name, "[]") {
+		key := name[:len(name)-2]
+		if existing, ok := data[key]; ok {
+			if arr, ok := existing.([]interface{}); ok {
+				data[key] = append(arr, value)
+				return
+			}
+		}
+		data[key] = []interface{}{value}
+		return
+	}
+	data[name] = value
 }
 
 func appendURLParam(u, name, value string) string {
