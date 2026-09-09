@@ -38,3 +38,18 @@ func compareStrings(a, b []string) bool {
 	}
 	return true
 }
+
+func TestParseJSONArrayField(t *testing.T) {
+	expected := []string{"-X", "POST", "-d", `{"tables":["users"]}`, "example.com"}
+	parseAndCompare(t, []string{"curlie", "post", "example.com", "tables[]=users"}, expected)
+}
+
+func TestParseJSONArrayFieldAppend(t *testing.T) {
+	expected := []string{"-X", "POST", "-d", `{"tables":["users","admins"]}`, "example.com"}
+	parseAndCompare(t, []string{"curlie", "post", "example.com", "tables[]=users", "tables[]=admins"}, expected)
+}
+
+func TestParseJSONArrayRaw(t *testing.T) {
+	expected := []string{"-X", "POST", "-d", `{"ids":[1,2]}`, "example.com"}
+	parseAndCompare(t, []string{"curlie", "post", "example.com", "ids[]:=1", "ids[]:=2"}, expected)
+}
