@@ -107,7 +107,9 @@ func main() {
 			inputWriter.Write([]byte(data))
 		} else if !term.IsTerminal(stdinFd) {
 			// If something is piped in to the command, tell curl to use it as input.
-			opts = append(opts, "-d@-")
+			if !opts.HasJSON() {
+				opts = append(opts, "-d@-")
+			}
 			// Tee the stdin to the buffer used show the posted data in verbose mode.
 			stdin = io.TeeReader(stdin, inputWriter)
 		} else {
