@@ -27,6 +27,26 @@ func (opts Opts) Has(opt string) bool {
 	return opts.index(opt) != -1
 }
 
+// HasJSON reports whether parsed curl options explicitly provide JSON data.
+func (opts Opts) HasJSON() bool {
+	for i := 0; i < len(opts); i++ {
+		opt := opts[i]
+		if opt == "--json" || strings.HasPrefix(opt, "--json=") ||
+			opt == "--expand-json" || strings.HasPrefix(opt, "--expand-json=") {
+			return true
+		}
+		// A value such as an output filename may itself look like --json.
+		if strings.HasPrefix(opt, "--") {
+			if longHasValue(opt[2:]) {
+				i++
+			}
+		} else if len(opt) == 2 && opt[0] == '-' && strings.IndexByte(curlShortValues, opt[1]) != -1 {
+			i++
+		}
+	}
+	return false
+}
+
 // Val return the value of the first occurrence of opt.
 func (opts Opts) Val(opt string) string {
 	if idx := opts.index(opt); idx != -1 && idx+1 < len(opts) {
