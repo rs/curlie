@@ -108,3 +108,98 @@ func TestJSONEqualsDoesNotAddStdinArgument(t *testing.T) {
 		})
 	}
 }
+
+func TestJSONTransferRequestBodies(t *testing.T) {
+	const stdin = `{"piped":true}`
+	const first = `{"first":1}`
+	const last = `{"last":2}`
+	for _, tt := range []struct {
+		name     string
+		groups   [][]string
+		boundary string
+		bodies   []string
+	}{
+		{"JSON then stdin", [][]string{{"--json", first}, {}}, "--next", []string{first, stdin}},
+		{"expanded JSON then stdin", [][]string{{"--variable", "body=" + first, "--expand-json", "{{body}}"}, {}}, "--next", []string{first, stdin}},
+		{"stdin then JSON", [][]string{{}, {"--json", last}}, "--next", []string{"", last}},
+		{"stdin then expanded JSON", [][]string{{}, {"--variable", "body=" + last, "--expand-json", "{{body}}"}}, "--next", []string{"", last}},
+		{"two JSON then stdin", [][]string{{"--json", first}, {"--json", last}, {}}, "--next", []string{first, last, stdin}},
+		{"middle JSON then stdin", [][]string{{}, {"--json", first}, {}}, "--next", []string{"", first, stdin}},
+		{"short next", [][]string{{"--json", first}, {}}, "-:", []string{first, stdin}},
+		{"compound short next", [][]string{{"--json", first}, {}}, "-s:", []string{first, stdin}},
+		{"next as JSON body", [][]string{{}, {"--json", "--next"}}, "--next", []string{"", "--next"}},
+		{"short next as JSON body", [][]string{{}, {"--json", "-:"}}, "--next", []string{"", "-:"}},
+		{"next as earlier JSON body", [][]string{{"--json", "--next"}, {}}, "--next", []string{"--next", stdin}},
+		{"next as output filename", [][]string{{"--json", first}, {"--json", last, "--output", "--next"}}, "--next", []string{first, last}},
+		{"next-like filename before boundary", [][]string{{"--json", first, "--output", "--next"}, {}}, "--next", []string{first, stdin}},
+		{"next as header value", [][]string{{"--json", first}, {"--json", last, "--header", "--next"}}, "--next", []string{first, last}},
+		{"short next as user agent", [][]string{{"--json", first}, {"--json", last, "-A", "-:"}}, "--next", []string{first, last}},
+		{"compound next-like user agent", [][]string{{"--json", first}, {"--json", last, "-A--next"}}, "--next", []string{first, last}},
+		{"JSON-like filename after boundary", [][]string{{"--json", first}, {"--output", "--json"}}, "--next", []string{first, stdin}},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			type request struct{ path, method, body string }
+			requests := make(chan request, len(tt.groups))
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				requests <- request{r.URL.Path, r.Method, string(body)}
+				fmt.Fprint(w, "{}")
+			}))
+			defer server.Close()
+			argv := []string{"--disable"}
+			for i, group := range tt.groups {
+				if i > 0 {
+					argv = append(argv, tt.boundary)
+				}
+				argv = append(argv, "--noproxy", "*", "--max-time", "5")
+				argv = append(argv, group...)
+				// Explicit --url preserves curl's transfer groups through Parse.
+				argv = append(argv, "--url", fmt.Sprintf("%s/%d", server.URL, i))
+			}
+			runCurlie(t, argv, stdin, t.TempDir())
+			for i, body := range tt.bodies {
+				method := "POST"
+				if body == "" {
+					method = "GET"
+				}
+				want := request{fmt.Sprintf("/%d", i), method, body}
+				select {
+				case got := <-requests:
+					if got != want {
+						t.Errorf("request %d = %#v, want %#v", i, got, want)
+					}
+				default:
+					t.Fatalf("no request received for transfer %d", i)
+				}
+			}
+		})
+	}
+}
+
+func TestJSONTransferEqualsArguments(t *testing.T) {
+	// Check forwarding for equals syntax even when native curl is too old to accept it.
+	for _, tt := range []struct {
+		name     string
+		options  []string
+		addStdin bool
+	}{
+		{"first JSON", []string{"--json={}", "--url", "http://127.0.0.1:1/first", "--next", "--url", "http://127.0.0.1:1/last"}, true},
+		{"first expanded JSON", []string{"--expand-json={}", "--url", "http://127.0.0.1:1/first", "-:", "--url", "http://127.0.0.1:1/last"}, true},
+		{"last JSON", []string{"--url", "http://127.0.0.1:1/first", "--next", "--json={}", "--url", "http://127.0.0.1:1/last"}, false},
+		{"last expanded JSON", []string{"--url", "http://127.0.0.1:1/first", "--next", "--expand-json={}", "--url", "http://127.0.0.1:1/last"}, false},
+		{"equals JSON next-like body", []string{"--json=--next", "--url", "http://127.0.0.1:1/"}, false},
+		{"equals expanded JSON next-like body", []string{"--expand-json=-:", "--url", "http://127.0.0.1:1/"}, false},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			argv := append([]string{"--disable", "--curl"}, tt.options...)
+			output := runCurlie(t, argv, "{}", t.TempDir())
+			if strings.Contains(output, " -d@-") != tt.addStdin {
+				t.Fatalf("unexpected curl arguments: %s", output)
+			}
+		})
+	}
+}

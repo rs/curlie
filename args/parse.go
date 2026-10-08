@@ -27,15 +27,19 @@ func (opts Opts) Has(opt string) bool {
 	return opts.index(opt) != -1
 }
 
-// HasJSON reports whether parsed curl options explicitly provide JSON data.
+// HasJSON reports whether the last transfer explicitly provides JSON data.
 func (opts Opts) HasJSON() bool {
+	hasJSON := false
 	for i := 0; i < len(opts); i++ {
 		opt := opts[i]
+		if opt == "--next" || opt == "-:" {
+			hasJSON = false
+		}
 		if opt == "--json" || strings.HasPrefix(opt, "--json=") ||
 			opt == "--expand-json" || strings.HasPrefix(opt, "--expand-json=") {
-			return true
+			hasJSON = true
 		}
-		// A value such as an output filename may itself look like --json.
+		// A value such as a JSON body or output filename may itself look like an option.
 		if strings.HasPrefix(opt, "--") {
 			if longHasValue(opt[2:]) {
 				i++
@@ -44,7 +48,7 @@ func (opts Opts) HasJSON() bool {
 			i++
 		}
 	}
-	return false
+	return hasJSON
 }
 
 // Val return the value of the first occurrence of opt.
