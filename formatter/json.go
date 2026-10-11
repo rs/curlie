@@ -34,6 +34,11 @@ func (j *JSON) Write(p []byte) (n int, err error) {
 	cp := j.buf
 	for i := 0; i < len(p); i++ {
 		b := p[i]
+		if b == 0x1b {
+			cp = append(cp, '\\', 'u', '0', '0', '1', 'b')
+			j.last = b
+			continue
+		}
 		if j.last == '\\' {
 			cp = append(cp, b)
 			j.last = b
