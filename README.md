@@ -78,6 +78,12 @@ Custom method, headers and JSON data:
 
 ![Custom PUT request with headers and JSON data example](doc/put.png)
 
+Multipart form with a file upload (as in HTTPie, `field=value` is sent as a literal string and `field@path` uploads a file; append `;type=mime` to set its content type):
+
+```sh
+curlie --form POST example.com name=John avatar@./photo.png
+```
+
 When running interactively, `curlie` provides pretty-printed output for json. To force pretty-printed output, pass `--pretty`.
 
 ## Build

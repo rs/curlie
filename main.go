@@ -44,7 +44,11 @@ func main() {
 	var stdin io.Reader = os.Stdin
 	input := &bytes.Buffer{}
 	var inputWriter io.Writer = input
-	opts := args.Parse(os.Args)
+	opts, err := args.Parse(os.Args)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "curlie: %v\n", err)
+		os.Exit(2)
+	}
 
 	verbose := opts.Has("verbose") || opts.Has("v")
 	quiet := opts.Has("silent") || opts.Has("s")
@@ -74,7 +78,7 @@ func main() {
 	if opts.Has("h") || opts.Has("help") {
 		stdout = &formatter.HelpAdapter{Out: stdout, CmdName: os.Args[0]}
 	} else {
-		isForm := opts.Has("F")
+		isForm := opts.Has("F") || opts.Has("form-string")
 		if pretty || term.IsTerminal(stdoutFd) {
 			inputWriter = &formatter.JSON{
 				Out:    inputWriter,

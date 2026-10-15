@@ -66,7 +66,7 @@ func (opts *Opts) Remove(opt string) bool {
 }
 
 // Parse converts an HTTPie like argv into a list of curl options.
-func Parse(argv Opts) (opts Opts) {
+func Parse(argv Opts) (opts Opts, err error) {
 	isForm := argv.Has("F") || argv.Has("form")
 	if isForm {
 		argv.Remove("F")
@@ -117,7 +117,11 @@ func Parse(argv Opts) (opts Opts) {
 		if isForm {
 			postMode = PostModeFORM
 		}
-		opts = append(opts, parseFancyArgs(args, postMode)...)
+		fancyOpts, err := parseFancyArgs(args, postMode)
+		if err != nil {
+			return nil, err
+		}
+		opts = append(opts, fancyOpts...)
 	}
 	return
 }
