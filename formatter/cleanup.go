@@ -37,31 +37,7 @@ func (c *HeaderCleaner) Write(p []byte) (n int, err error) {
 		}
 		c.line = append(c.line, p[:idx+1]...)
 		p = p[idx+1:]
-		ignore := false
-		b, i := firstVisibleChar(c.line)
-		switch b {
-		case '>':
-			if c.Verbose {
-				c.line = c.line[i+2:]
-			} else {
-				ignore = true
-			}
-		case '<':
-			c.line = c.line[i+2:]
-		case '}', '{':
-			ignore = true
-			if c.Verbose && c.Post != nil {
-				cp = append(append(cp, bytes.TrimSpace(c.Post.Bytes())...), '\n', '\n')
-				c.Post = nil
-			}
-		case '*':
-			if !c.Verbose {
-				ignore = true
-			}
-		}
-		if !ignore {
-			cp = append(cp, c.line...)
-		}
+		cp = c.processLine(c.line, cp)
 		c.line = c.line[:0]
 	}
 	_, err = c.Out.Write(cp)
@@ -73,12 +49,58 @@ var colorEscape = []byte("\x1b[")
 func firstVisibleChar(b []byte) (byte, int) {
 	if bytes.HasPrefix(b, colorEscape) {
 		if idx := bytes.IndexByte(b, 'm'); idx != -1 {
-			if idx < len(b) {
-				return b[idx+1], idx + 1
-			} else {
-				return 0, -1
-			}
+			return b[idx], idx + 1
+			/*
+				if idx < len(b) {
+					return b[idx+1], idx + 1
+				} else {
+					return 0, -1
+				}
+			*/
 		}
 	}
 	return b[0], 0
+}
+
+func (c *HeaderCleaner) processLine(
+	line []byte,
+	output []byte,
+) []byte {
+	ignore := false
+	b, i := firstVisibleChar(line)
+
+	switch b {
+	case '>':
+		if c.Verbose {
+			line = line[i+2:]
+		} else {
+			ignore = true
+		}
+	case '<':
+		prefixEnd := i + 2
+		if prefixEnd <= len(line)-1 {
+			line = line[prefixEnd:]
+		} else {
+			line = line[prefixEnd-1:]
+		}
+	case '}', '{':
+		ignore = true
+		if c.Verbose && c.Post != nil {
+			output = append(
+				output,
+				bytes.TrimSpace(c.Post.Bytes())...,
+			)
+			output = append(output, '\n', '\n')
+			c.Post = nil
+		}
+	case '*':
+		if !c.Verbose {
+			ignore = true
+		}
+	}
+
+	if !ignore {
+		output = append(output, line...)
+	}
+	return output
 }

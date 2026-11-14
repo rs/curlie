@@ -1,0 +1,22 @@
+# Course-side exclusions: tests that are environment-sensitive outside the
+# benchmark containers. Format: <branch>/<classname>.<testname>
+
+# curlie wraps the system curl and colorizes its output. The response-formatting
+# tests embed the mock http.server's Server header, which carries the running
+# Python version (macOS venv is 3.12 vs the container's Python/3.10.12), so the
+# colorized bytes differ. The --help snapshot passes curl's own --help through, and
+# a bad/missing -K config file makes macOS's curl exit 26 where the container's
+# curl warned and still ran the request -- both are curl-version behavioural diffs.
+
+14b17ef91067/eval.tests.test_config_env.test_missing_config_file_warns_but_still_runs_request
+14b17ef91067/eval.tests.test_config_env.test_unknown_option_in_config_file_warns_but_still_runs_request
+b0101c1377da/eval.tests.test_cli_help_and_version.test_help_all_exact_snapshot_normalized
+e9e6a7ad1507/tests.test_formatting_headers.test_colorization_with_tty
+e9e6a7ad1507/tests.test_formatting_headers.test_connection_info_comment_color
+e9e6a7ad1507/tests.test_formatting_headers.test_header_field_value_colorization
+e9e6a7ad1507/tests.test_formatting_headers.test_request_method_colorization
+e9e6a7ad1507/tests.test_formatting_headers.test_status_line_colorization
+e9e6a7ad1507/tests.test_formatting_json.test_nested_json_formatting
+e9e6a7ad1507/tests.test_formatting_json.test_simple_json_formatting_with_pretty
+e9e6a7ad1507/tests.test_formatting_json.test_very_deep_nesting_10plus_levels
+e9e6a7ad1507/tests.test_special_commands.test_help_no_args
